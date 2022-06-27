@@ -2,6 +2,7 @@ name: Trigger image scanning on pull request and changes to pr
 on:
   pull_request:
     types: [opened, edited, synchronize]
+    branches: [main]
 
 jobs:
   deploy:
@@ -22,8 +23,11 @@ jobs:
         uses: tj-actions/changed-files@v23
         with:
           files_ignore: |
-            **/*.md
+            *.md
+            knowledge-base
             .github/workflows
+            .gitignore
+            license
           dir_names: true
 
       - name: List all changed directories/images
@@ -50,7 +54,6 @@ jobs:
           for directory in ${{ steps.changed-directories.outputs.other_changed_files }}; do
             tag=$(echo $directory | tr / -)
             npx snyk container test $tag --json >> $tag.json
-            touch /tmp/$BRANCH/$tag.html
             npx snyk-to-html -i $tag.json -o /tmp/$BRANCH/$tag.html -s -d
             scan_reports=$(echo $GH_PAGES_BASE_URL/$BRANCH/$tag.html $scan_reports)
           done
