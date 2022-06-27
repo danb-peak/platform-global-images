@@ -22,7 +22,7 @@ jobs:
         uses: tj-actions/changed-files@v23
         with:
           files_ignore: |
-            knowledge-base/*.md
+            **/*.md
             .github/workflows
           dir_names: true
 
