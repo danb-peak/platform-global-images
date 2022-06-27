@@ -32,13 +32,13 @@ jobs:
 
       - name: List all changed directories/images
         run: |
-          for directory in ${{ steps.changed-directories.outputs.other_changed_files }}; do
+          for directory in ${{ steps.changed-directories.outputs.all_changed_files }}; do
             echo "$directory was changed"
           done
 
       - name: Run docker build on changed images
         run: |
-          for directory in ${{ steps.changed-directories.outputs.other_changed_files }}; do
+          for directory in ${{ steps.changed-directories.outputs.all_changed_files }}; do
             tag=$(echo $directory | tr / -)
             echo "Building $directory"
             docker build $directory --build-arg PEAK_USER_ID=$PEAK_USER_ID -t $tag
@@ -51,7 +51,7 @@ jobs:
         run: |
           npx snyk auth $SNYK_TOKEN
           mkdir -p /tmp/$BRANCH
-          for directory in ${{ steps.changed-directories.outputs.other_changed_files }}; do
+          for directory in ${{ steps.changed-directories.outputs.all_changed_files }}; do
             tag=$(echo $directory | tr / -)
             npx snyk container test $tag --json >> $tag.json
             npx snyk-to-html -i $tag.json -o /tmp/$BRANCH/$tag.html -s -d
